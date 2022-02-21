@@ -6,7 +6,7 @@
 /*   By: lbarture <lbarture@student.42urduli>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/15 19:10:20 by lbarture          #+#    #+#             */
-/*   Updated: 2022/02/21 20:15:03 by lbarture         ###   ########.fr       */
+/*   Updated: 2022/02/16 21:19:49 by lbarture         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,18 @@ void signals(char c, int pid)
 	{
 		if((c & (0x01<<q)) != 0)
 		{
+		//Se van guardando los bits que son 1 en la posición correspondiente en ascii.
 			ascii += 0x01<<q;
+        	printf("bit = %d, ascii = %d\n", (0x01<<q), ascii);
         	kill(pid, SIGUSR1);
 		}
 		else
 			kill(pid, SIGUSR2);
+    printf("q = %d\n", q);
     q++;
     usleep(10000);
     }
+    printf("La letra es = %c\n",(char)ascii);
 }
 
 int main(int argc, char **argv)
