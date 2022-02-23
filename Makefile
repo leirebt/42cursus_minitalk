@@ -1,15 +1,22 @@
 NAME1 = server
 NAME2 = client
+NAME3 = server_bonus
+NAME4 = client_bonus
 SRC1 = server.c
 SRC2 = client.c
+SRC3 = server_bonus.c
+SRC4 = client_bonus.c
 SRC_O1	= $(SRC1:.c=.o)
 SRC_O2	= $(SRC2:.c=.o)
+SRC_O3	= $(SRC3:.c=.o)
+SRC_O4	= $(SRC4:.c=.o)
 INCLUDES = ft_printf/libft/libft.h
 CC	=	gcc
-CFLAGS	=	-Werror -Wextra -Wall
+CFLAGS	=	-Werror -Wextra -Wall -g
 MAKE = make
 
 all	:	$(NAME1) $(NAME2)
+bonus : $(NAME3) $(NAME4)
 
 $(NAME1)	: $(SRC_O1)
 	$(MAKE) -C ft_printf
@@ -19,8 +26,17 @@ $(NAME1)	: $(SRC_O1)
 $(NAME2)   : $(SRC_O2)
 	$(MAKE) -C ft_printf/libft
 	cp 	ft_printf/libft/libft.a .
-	$(CC) $(CFLAGS) $(SRC_O2) libft.a -o $(NAME2)
+	$(CC) $(CFLAGS) $(SRC_O2) libftprintf.a -o $(NAME2)
 
+$(NAME3)    : $(SRC_O3)
+	$(MAKE) -C ft_printf
+	cp ft_printf/libftprintf.a .
+	$(CC) $(CFLAGS) $(SRC_O3) libftprintf.a -o $(NAME3)
+
+$(NAME4)    : $(SRC_O4)
+	$(MAKE) -C ft_printf
+	cp ft_printf/libftprintf.a .
+	$(CC) $(CFLAGS) $(SRC_O4) libftprintf.a -o $(NAME4)
 
 %.o	:	%.c ft_printf/libft/libft.h
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -29,12 +45,12 @@ $(NAME2)   : $(SRC_O2)
 clean	:
 	$(MAKE) -C ft_printf/libft/ clean
 	$(MAKE) -C ft_printf/ clean
-	rm -f $(SRC_O1) $(SRC_O2)
+	rm -f $(SRC_O1) $(SRC_O2) $(SRC_O3) $(SRC_O4)
 
 fclean	: clean
 	$(MAKE) -C ft_printf/libft/ fclean
 	$(MAKE) -C ft_printf/ fclean
-	rm -f $(NAME1) $(NAME2)
+	rm -f $(NAME1) $(NAME2) $(NAME3) $(NAME4)
 
 re	: fclean all
 

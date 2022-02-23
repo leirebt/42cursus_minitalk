@@ -1,13 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server_bonus.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lbarture <lbarture@student.42urduliz.com>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/02/23 18:21:23 by lbarture          #+#    #+#             */
+/*   Updated: 2022/02/23 20:06:19 by lbarture         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <signal.h>
-#include <stdio.h>
 #include <unistd.h>
 #include"ft_printf/ft_printf.h"
 
-void print(int sig)
+void print(int sig, siginfo_t *info, void *x)
 {
 	static int ascii;
 	static int q;
-	
+	x = NULL;
+	//Para acceder a la varible de una estructura que es un puntero s epone flecha. Sino con punto.
 	if(!q)
 	{
 		q = 0;
@@ -21,20 +33,23 @@ void print(int sig)
 		ft_printf("%c", (char)ascii);
 		q = 0;
 	}
+	usleep(5000);
+	kill(info->si_pid, SIGUSR1);
 }
 
 int	main()
 {
 	struct sigaction sa;
-	pid_t si_pid; //¿Cómo le pasa el PID?
-	sa.sigaction = sig;
-	printf("Número PID: %d\n", getpid());
-	signal(SIGUSR1, &sa, NULL);
-	signal(SIGUSR2, &sa, NULL);
+	sa.sa_sigaction = print;
+	ft_printf("Número PID: %d\n", getpid());
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 
 	while(1)
 	{
-		sleep(1);
+		pause();
 	}
 	return(0);
 }

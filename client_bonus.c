@@ -1,43 +1,62 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lbarture <lbarture@student.42urduli>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/15 19:10:20 by lbarture          #+#    #+#             */
-/*   Updated: 2022/02/16 21:19:49 by lbarture         ###   ########.fr       */
+/*   Updated: 2022/02/23 20:06:12 by lbarture         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include<stdio.h>
 #include<signal.h>
 #include<unistd.h>
 #include"ft_printf/libft/libft.h"
+#include"ft_printf/ft_printf.h"
 
-void signals(char c, int pid)
+void response(int pid)
 {
-	int	q;
+	(void)pid;
+	ft_printf("Received signal!\n");
+}
+
+int signals(char c, int pid)
+{
+	static int	q;
 	int	ascii;
 
-	q = 0;
+	if(!q)
+    {
+        q = 0;
+        ascii = 0;
+    }
 	ascii = 0;
 	while(q < 8)
 	{
 		if((c & (0x01<<q)) != 0)
 		{
-		//Se van guardando los bits que son 1 en la posición correspondiente en ascii.
 			ascii += 0x01<<q;
-        	printf("bit = %d, ascii = %d\n", (0x01<<q), ascii);
-        	kill(pid, SIGUSR1);
+        	if (kill(pid, SIGUSR1) < 0)
+			{
+				ft_printf("Sorry, the introduced PID is invalid. 🤥\n");
+				return(0);
+			}
 		}
 		else
-			kill(pid, SIGUSR2);
-    printf("q = %d\n", q);
+		{
+			if(kill(pid, SIGUSR2) < 0)
+			{
+				ft_printf("Sorry, the introduced PID is invalid. 🤥\n");
+				return(0);
+			}
+		}
     q++;
-    usleep(10000);
-    }
-    printf("La letra es = %c\n",(char)ascii);
+    sleep(10);
+    }    
+	if(q == 8)
+        q = 0;
+	return(1);
 }
 
 int main(int argc, char **argv)
@@ -45,19 +64,23 @@ int main(int argc, char **argv)
 	int pid;
 	int n;
 
+	signal(SIGUSR1, &response);
 	n = 0;
-	if(argc != 1)
+	if(argc == 3)
 	{
 		pid = ft_atoi(argv[1]);
 		if(pid > 0)
 		{
 		while(argv[2][n])
 		{
-			signals(argv[2][n], pid);
+			if(signals(argv[2][n], pid) == 0)
+				return(0);
 			n++;
 		}
 		signals('\n', pid);
 		return(0);
-		} 
-	}
+		} else
+			ft_printf("Please, introduce a valid PID.\n");
+	} else
+		ft_printf("Please, introduce 3 arguments.\n");
 }
