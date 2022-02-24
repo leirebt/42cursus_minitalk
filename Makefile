@@ -51,6 +51,7 @@ fclean	: clean
 	$(MAKE) -C ft_printf/libft/ fclean
 	$(MAKE) -C ft_printf/ fclean
 	rm -f $(NAME1) $(NAME2) $(NAME3) $(NAME4)
+	rm -f libftprintf.a libft.a 
 
 re	: fclean all
 
